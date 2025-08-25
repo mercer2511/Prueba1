@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { BreadcrumbItemType } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
@@ -51,6 +52,21 @@ interface Props {
   cart: Cart;
 }
 
+const breadcrumbs: BreadcrumbItemType[] = [
+  {
+    title: 'Carrito',
+    href: route('cart.index'),
+  },
+  {
+    title: 'Finalizar compra',
+    href: route('checkout.index'),
+  },
+  {
+    title: 'Pago',
+    href: route('checkout.payment'),
+  },
+];
+
 // Definir props y extraer cart directamente para usarlo en el template
 const { cart } = defineProps<Props>();
 
@@ -98,25 +114,25 @@ const submit = () => {
 </script>
 
 <template>
-  <CartLayout title="Payment">
-    <Head title="Payment" />
+  <CartLayout title="Pago" :breadcrumbs="breadcrumbs">
+    <Head title="Pago" />
 
     <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-2">Payment</h1>
-        <p class="text-gray-600 dark:text-gray-400">Complete your purchase by providing payment information.</p>
+        <h1 class="text-3xl font-bold mb-2">Pago</h1>
+        <p class="text-gray-600 dark:text-gray-400">Completa tu compra proporcionando la información de pago.</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
           <Card class="mb-6">
             <CardHeader>
-              <CardTitle>Payment Information</CardTitle>
+              <CardTitle>Información de pago</CardTitle>
             </CardHeader>
             <CardContent>
               <form @submit.prevent="submit" class="space-y-6">
                 <div>
-                  <Label for="card_number">Card Number</Label>
+                  <Label for="card_number">Número de tarjeta</Label>
                   <Input
                     id="card_number"
                     type="text"
@@ -131,12 +147,12 @@ const submit = () => {
                 </div>
 
                 <div>
-                  <Label for="card_holder">Card Holder Name</Label>
+                  <Label for="card_holder">Nombre del titular</Label>
                   <Input
                     id="card_holder"
                     type="text"
                     v-model="form.card_holder"
-                    placeholder="TEST"
+                    placeholder="PRUEBA"
                     class="mt-1"
                     required
                   />
@@ -147,13 +163,13 @@ const submit = () => {
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <Label for="expiry_date">Expiry Date</Label>
+                    <Label for="expiry_date">Fecha de expiración</Label>
                     <Input
                       id="expiry_date"
                       type="text"
                       v-model="form.expiry_date"
                       @input="handleExpiryInput"
-                      placeholder="MM/YY"
+                      placeholder="MM/AA"
                       class="mt-1"
                       maxlength="5"
                       required
@@ -184,19 +200,19 @@ const submit = () => {
                 </div>
 
                 <div class="text-xs text-gray-500 dark:text-gray-400 border-t pt-4 mt-4">
-                  <p class="mb-2">For testing purposes, use:</p>
+                  <p class="mb-2">Para pruebas, utiliza:</p>
                   <ul class="list-disc pl-5 space-y-1">
-                    <li>Card Number: 4111 1111 1111 1111</li>
-                    <li>Card Holder: TEST (Success) or FAIL (Declined)</li>
-                    <li>Any future expiry date (MM/YY)</li>
-                    <li>Any 3-digit CVV</li>
+                    <li>Número de tarjeta: 4111 1111 1111 1111</li>
+                    <li>Titular: PRUEBA (Éxito) o FALLA (Rechazado)</li>
+                    <li>Cualquier fecha de expiración futura (MM/AA)</li>
+                    <li>Cualquier CVV de 3 dígitos</li>
                   </ul>
                 </div>
               </form>
             </CardContent>
             <CardFooter>
               <Button class="w-full" type="button" @click="submit" :disabled="form.processing">
-                Complete Order
+                Completar pedido
               </Button>
             </CardFooter>
           </Card>
@@ -205,7 +221,7 @@ const submit = () => {
         <div class="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>Resumen del pedido</CardTitle>
             </CardHeader>
             <CardContent>
               <div class="space-y-4">
@@ -218,7 +234,7 @@ const submit = () => {
                 </div>
                 
                 <div class="pt-3 pb-3 border-b">
-                  <h3 class="font-medium mb-1">Shipping Address</h3>
+                  <h3 class="font-medium mb-1">Dirección de envío</h3>
                   <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ cart.address.line_1 }}<br>
                     <template v-if="cart.address.line_2">{{ cart.address.line_2 }}<br></template>
@@ -231,11 +247,11 @@ const submit = () => {
                   <span>${{ typeof cart.subtotal === 'number' ? cart.subtotal.toFixed(2) : Number(cart.subtotal).toFixed(2) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>Tax (16%)</span>
+                  <span>Impuesto (16%)</span>
                   <span>${{ typeof cart.tax === 'number' ? cart.tax.toFixed(2) : Number(cart.tax).toFixed(2) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>Shipping</span>
+                  <span>Envío</span>
                   <span>${{ typeof cart.shipping_fee === 'number' ? cart.shipping_fee.toFixed(2) : Number(cart.shipping_fee).toFixed(2) }}</span>
                 </div>
                 <div class="border-t pt-2 mt-2 flex justify-between font-bold">

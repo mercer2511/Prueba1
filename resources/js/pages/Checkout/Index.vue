@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { BreadcrumbItemType } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
@@ -48,6 +49,17 @@ const props = defineProps<Props>();
 
 const selectedAddressId = ref(props.addresses.find(a => a.is_default)?.id || (props.addresses.length > 0 ? props.addresses[0].id : null));
 
+const breadcrumbs: BreadcrumbItemType[] = [
+  {
+    title: 'Carrito',
+    href: route('cart.index'),
+  },
+  {
+    title: 'Finalizar compra',
+    href: route('checkout.index'),
+  },
+];
+
 const submitShipping = () => {
   if (!selectedAddressId.value) {
     alert('Please select an address or add a new one');
@@ -61,26 +73,26 @@ const submitShipping = () => {
 </script>
 
 <template>
-  <CartLayout title="Checkout">
-    <Head title="Checkout" />
+  <CartLayout title="Finalizar compra" :breadcrumbs="breadcrumbs">
+    <Head title="Finalizar compra" />
 
     <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-2">Checkout</h1>
-        <p class="text-gray-600 dark:text-gray-400">Complete your purchase by providing shipping information.</p>
+        <h1 class="text-3xl font-bold mb-2">Finalizar compra</h1>
+        <p class="text-gray-600 dark:text-gray-400">Completa tu compra proporcionando la información de envío.</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
           <Card class="mb-6">
             <CardHeader>
-              <CardTitle>Shipping Address</CardTitle>
+              <CardTitle>Dirección de envío</CardTitle>
             </CardHeader>
             <CardContent>
               <div v-if="addresses.length === 0" class="py-6 text-center">
-                <p class="mb-4 text-gray-600 dark:text-gray-400">You don't have any saved addresses.</p>
+                <p class="mb-4 text-gray-600 dark:text-gray-400">No tienes direcciones guardadas.</p>
                 <Link :href="route('addresses.create')" class="text-[#f53003] dark:text-[#FF4433] hover:underline">
-                  Add a New Address
+                  Agregar nueva dirección
                 </Link>
               </div>
               <div v-else class="space-y-4">
@@ -99,7 +111,7 @@ const submitShipping = () => {
                     <label :for="`address-${address.id}`" class="block text-sm font-medium cursor-pointer">
                       <div>
                         <span class="font-bold">{{ address.line_1 }}</span>
-                        <span v-if="address.is_default" class="ml-2 text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">Default</span>
+                        <span v-if="address.is_default" class="ml-2 text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">Predeterminada</span>
                       </div>
                       <div v-if="address.line_2">{{ address.line_2 }}</div>
                       <div>{{ address.city }}, {{ address.state }} {{ address.zip }}</div>
@@ -108,14 +120,14 @@ const submitShipping = () => {
                 </div>
                 <div class="pt-4 text-right">
                   <Link :href="route('addresses.create')" class="text-[#f53003] dark:text-[#FF4433] hover:underline text-sm">
-                    Add a New Address
+                    Agregar nueva dirección
                   </Link>
                 </div>
               </div>
             </CardContent>
             <CardFooter>
               <Button class="w-full" @click="submitShipping" :disabled="!selectedAddressId">
-                Continue to Payment
+                Continuar al pago
               </Button>
             </CardFooter>
           </Card>
@@ -124,7 +136,7 @@ const submitShipping = () => {
         <div class="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>Resumen del pedido</CardTitle>
             </CardHeader>
             <CardContent>
               <div class="space-y-4">
@@ -140,11 +152,11 @@ const submitShipping = () => {
                   <span>${{ typeof cart.subtotal === 'number' ? cart.subtotal.toFixed(2) : Number(cart.subtotal).toFixed(2) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>Tax (16%)</span>
+                  <span>Impuesto (16%)</span>
                   <span>${{ typeof cart.tax === 'number' ? cart.tax.toFixed(2) : Number(cart.tax).toFixed(2) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>Shipping</span>
+                  <span>Envío</span>
                   <span>${{ typeof cart.shipping_fee === 'number' ? cart.shipping_fee.toFixed(2) : Number(cart.shipping_fee).toFixed(2) }}</span>
                 </div>
                 <div class="border-t pt-2 mt-2 flex justify-between font-bold">

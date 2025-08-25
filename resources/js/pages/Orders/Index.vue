@@ -80,23 +80,23 @@ const getStatusClass = (status: string) => {
 </script>
 
 <template>
-  <CartLayout title="My Orders" :breadcrumbs="breadcrumbs">
-    <Head title="My Orders" />
+  <CartLayout title="Mis órdenes" :breadcrumbs="breadcrumbs">
+    <Head title="Mis órdenes" />
 
     <div class="flex flex-col gap-6 p-4">
       <div>
-        <h1 class="text-2xl font-bold">My Orders</h1>
-        <p class="text-muted-foreground mt-1">View and manage your purchase history.</p>
+        <h1 class="text-2xl font-bold">Mis órdenes</h1>
+        <p class="text-muted-foreground mt-1">Consulta y administra tu historial de compras.</p>
       </div>
 
       <div v-if="orders.length === 0" class="text-center py-12 bg-card rounded-lg shadow">
         <div class="mx-auto w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-muted">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
-        <h2 class="text-xl font-semibold mb-2">You haven't placed any orders yet.</h2>
-        <p class="text-muted-foreground mb-6">Start shopping to see your orders here</p>
+        <h2 class="text-xl font-semibold mb-2">Aún no has realizado ninguna orden.</h2>
+        <p class="text-muted-foreground mb-6">Comienza a comprar para ver tus órdenes aquí</p>
         <Link :href="route('home')">
-          <Button variant="default">Browse Products</Button>
+          <Button variant="default">Ver productos</Button>
         </Link>
       </div>
 
@@ -105,20 +105,20 @@ const getStatusClass = (status: string) => {
           <CardHeader class="flex flex-col sm:flex-row gap-4 items-start justify-between">
             <div>
               <CardTitle class="flex flex-wrap items-center gap-2">
-                <span>Order #{{ order.id }}</span>
+                <span>Orden #{{ order.id }}</span>
                 <span :class="['text-xs px-2 py-1 rounded-full', getStatusClass(order.status)]">
                   {{ order.status.charAt(0).toUpperCase() + order.status.slice(1) }}
                 </span>
               </CardTitle>
               <p class="text-sm text-muted-foreground mt-1">
-                Placed on {{ formatDate(order.created_at) }}
+                Realizada el {{ formatDate(order.created_at) }}
               </p>
             </div>
             <div class="sm:text-right w-full sm:w-auto">
               <div class="font-bold text-lg">${{ order.total.toFixed(2) }}</div>
               <div class="flex flex-wrap gap-3 mt-2">
                 <Link :href="route('orders.show', order.id)">
-                  <Button variant="outline" size="sm">View Details</Button>
+                  <Button variant="outline" size="sm">Ver detalles</Button>
                 </Link>
                 <Button 
                   v-if="order.status === 'pending'" 
@@ -126,7 +126,7 @@ const getStatusClass = (status: string) => {
                   variant="destructive" 
                   size="sm"
                 >
-                  Cancel Order
+                  Cancelar orden
                 </Button>
               </div>
             </div>
@@ -138,7 +138,7 @@ const getStatusClass = (status: string) => {
                 <div class="font-semibold">${{ (item.quantity * item.price).toFixed(2) }}</div>
               </div>
               <div v-if="order.items.length > 3" class="text-sm text-muted-foreground italic">
-                + {{ order.items.length - 3 }} more item(s)
+                + {{ order.items.length - 3 }} artículo(s) más
               </div>
             </div>
           </CardContent>

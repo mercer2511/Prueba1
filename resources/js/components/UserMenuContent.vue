@@ -48,13 +48,13 @@ const handleLogout = () => {
             <DropdownMenuItem v-if="!isOnUserArea" :as-child="true">
                 <Link class="block w-full" :href="route('dashboard')" prefetch as="button">
                     <LayoutGrid class="mr-2 h-4 w-4" />
-                    Dashboard
+                    Panel
                 </Link>
             </DropdownMenuItem>
             <DropdownMenuItem :as-child="true">
                 <Link class="block w-full" :href="route('profile.edit')" prefetch as="button">
                     <Settings class="mr-2 h-4 w-4" />
-                    Settings
+                    Configuración
                 </Link>
             </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -62,7 +62,7 @@ const handleLogout = () => {
         <DropdownMenuItem :as-child="true">
             <Link class="block w-full" method="post" :href="route('logout')" @click="handleLogout" as="button">
                 <LogOut class="mr-2 h-4 w-4" />
-                Log out
+                Cerrar sesión
             </Link>
         </DropdownMenuItem>
     </template>
@@ -70,12 +70,12 @@ const handleLogout = () => {
         <DropdownMenuGroup>
             <DropdownMenuItem :as-child="true">
                 <Link class="block w-full" :href="route('login')" prefetch as="button">
-                    Login
+                    Iniciar sesión
                 </Link>
             </DropdownMenuItem>
             <DropdownMenuItem :as-child="true">
                 <Link class="block w-full" :href="route('register')" prefetch as="button">
-                    Register
+                    Registrarse
                 </Link>
             </DropdownMenuItem>
         </DropdownMenuGroup>

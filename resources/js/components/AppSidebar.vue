@@ -5,30 +5,35 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { ShoppingBag, Home, LayoutGrid, Settings, HelpCircle, ShoppingCart, Heart } from 'lucide-vue-next';
+import { Store, Package2, LayoutGrid, HelpCircle, ShoppingCart } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Panel',
         href: '/dashboard',
         icon: LayoutGrid,
     },
     {
-        title: 'My Orders',
+        title: 'Mis órdenes',
         href: '/orders',
-        icon: ShoppingBag,
+        icon: Package2,
     },
     {
-        title: 'Shop',
+        title: 'Tienda',
         href: '/',
+        icon: Store,
+    },
+    {
+        title: 'Carrito',
+        href: '/cart',
         icon: ShoppingCart,
     }
 ];
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Help',
+        title: 'Ayuda',
         href: '/help',
         icon: HelpCircle,
     }

@@ -96,25 +96,25 @@ const getStatusClass = (status: string) => {
 </script>
 
 <template>
-  <CartLayout :title="`Order #${order.id} Details`" :breadcrumbs="breadcrumbs">
-    <Head :title="`Order #${order.id} Details`" />
+  <CartLayout :title="`Detalles de la orden #${order.id}`" :breadcrumbs="breadcrumbs">
+    <Head :title="`Detalles de la orden #${order.id}`" />
 
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-2xl sm:text-3xl font-bold">
             <div class="flex flex-wrap items-center gap-3">
-              <span>Order #{{ order.id }}</span>
+              <span>Orden #{{ order.id }}</span>
               <span :class="['text-xs px-2 py-1 rounded-full', getStatusClass(order.status)]">
                 {{ order.status.charAt(0).toUpperCase() + order.status.slice(1) }}
               </span>
             </div>
           </h1>
-          <p class="text-muted-foreground mt-1">Placed on {{ formatDate(order.created_at) }}</p>
+          <p class="text-muted-foreground mt-1">Realizada el {{ formatDate(order.created_at) }}</p>
         </div>
         <div>
           <Button v-if="order.status === 'pending'" variant="destructive" @click="cancelOrder">
-            Cancel Order
+            Cancelar orden
           </Button>
         </div>
       </div>
@@ -123,7 +123,7 @@ const getStatusClass = (status: string) => {
         <div class="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader class="pb-3">
-              <CardTitle>Order Items</CardTitle>
+              <CardTitle>Artículos de la orden</CardTitle>
             </CardHeader>
             <CardContent>
               <div class="divide-y">
@@ -141,7 +141,7 @@ const getStatusClass = (status: string) => {
                       <p v-if="item.item.description" class="text-muted-foreground text-sm mt-1">{{ item.item.description }}</p>
                     </div>
                     <div class="flex justify-between items-end mt-2">
-                      <p class="text-muted-foreground">Quantity: <span class="font-medium">{{ item.quantity }}</span></p>
+                      <p class="text-muted-foreground">Cantidad: <span class="font-medium">{{ item.quantity }}</span></p>
                       <p class="text-lg font-bold">${{ typeof item.price === 'number' ? (item.price * item.quantity).toFixed(2) : (Number(item.price) * item.quantity).toFixed(2) }}</p>
                     </div>
                   </div>
@@ -152,7 +152,7 @@ const getStatusClass = (status: string) => {
           
           <Card>
             <CardHeader class="pb-3">
-              <CardTitle>Shipping Address</CardTitle>
+              <CardTitle>Dirección de envío</CardTitle>
             </CardHeader>
             <CardContent>
               <div class="p-3 bg-muted/50 rounded-md">
@@ -169,7 +169,7 @@ const getStatusClass = (status: string) => {
         <div class="lg:col-span-1">
           <Card>
             <CardHeader class="pb-3">
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>Resumen de la orden</CardTitle>
             </CardHeader>
             <CardContent>
               <div class="space-y-3">
@@ -178,11 +178,11 @@ const getStatusClass = (status: string) => {
                   <span class="font-medium">${{ typeof order.subtotal === 'number' ? order.subtotal.toFixed(2) : Number(order.subtotal).toFixed(2) }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
-                  <span class="text-muted-foreground">Tax (16%)</span>
+                  <span class="text-muted-foreground">Impuesto (16%)</span>
                   <span class="font-medium">${{ typeof order.tax === 'number' ? order.tax.toFixed(2) : Number(order.tax).toFixed(2) }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
-                  <span class="text-muted-foreground">Shipping</span>
+                  <span class="text-muted-foreground">Envío</span>
                   <span class="font-medium">${{ typeof order.shipping_fee === 'number' ? order.shipping_fee.toFixed(2) : Number(order.shipping_fee).toFixed(2) }}</span>
                 </div>
                 <div class="border-t pt-3 mt-1 flex justify-between">
@@ -194,7 +194,7 @@ const getStatusClass = (status: string) => {
             <CardFooter class="border-t">
               <Link :href="route('orders.index')" class="w-full">
                 <Button class="w-full" variant="outline">
-                  Back to Orders
+                  Volver a órdenes
                 </Button>
               </Link>
             </CardFooter>

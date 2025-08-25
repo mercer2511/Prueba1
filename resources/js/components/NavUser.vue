@@ -38,12 +38,12 @@ const { isMobile, state } = useSidebar();
                 <div class="flex flex-col space-y-2 p-2">
                     <Link :href="route('login')" class="w-full">
                         <SidebarMenuButton size="sm">
-                            Login
+                            Iniciar sesión
                         </SidebarMenuButton>
                     </Link>
                     <Link :href="route('register')" class="w-full">
                         <SidebarMenuButton size="sm" variant="outline">
-                            Register
+                            Registrarse
                         </SidebarMenuButton>
                     </Link>
                 </div>

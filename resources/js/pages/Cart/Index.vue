@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { BreadcrumbItemType } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
@@ -61,16 +62,23 @@ const clearCart = () => {
 const proceedToCheckout = () => {
   router.get(route('checkout.index'));
 };
+
+const breadcrumbs: BreadcrumbItemType[] = [
+  {
+    title: 'Carrito',
+    href: route('cart.index'),
+  },
+];
 </script>
 
 <template>
-  <CartLayout title="Your Cart">
-    <Head title="Your Cart" />
+  <CartLayout title="Carrito" :breadcrumbs="breadcrumbs">
+    <Head title="Carrito" />
 
     <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-2">Your Shopping Cart</h1>
-        <p class="text-gray-600 dark:text-gray-400">Manage the items in your cart.</p>
+        <h1 class="text-3xl font-bold mb-2">Tu carrito de compras</h1>
+        <p class="text-gray-600 dark:text-gray-400">Administra los artículos en tu carrito.</p>
       </div>
 
       <div v-if="!hasItems" class="text-center py-16">
@@ -81,15 +89,15 @@ const proceedToCheckout = () => {
             <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
           </svg>
         </div>
-        <p class="text-xl text-gray-600 dark:text-gray-400 mb-6">Your cart is empty.</p>
-        <Link :href="route('home')" class="text-[#f53003] dark:text-[#FF4433] hover:underline">Continue Shopping</Link>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-6">Tu carrito está vacío.</p>
+        <Link :href="route('home')" class="text-[#f53003] dark:text-[#FF4433] hover:underline">Seguir comprando</Link>
       </div>
 
       <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
           <Card class="mb-6">
             <CardHeader>
-              <CardTitle>Items in Your Cart</CardTitle>
+              <CardTitle>Artículos en tu carrito</CardTitle>
             </CardHeader>
             <CardContent>
               <div class="space-y-4">
@@ -130,7 +138,7 @@ const proceedToCheckout = () => {
                         @click="removeItem(item.id)" 
                         class="text-red-500 hover:text-red-700"
                       >
-                        Remove
+                        Quitar
                       </button>
                     </div>
                   </div>
@@ -139,9 +147,9 @@ const proceedToCheckout = () => {
             </CardContent>
             <CardFooter>
               <div class="flex justify-between w-full">
-                <Button variant="outline" @click="clearCart">Clear Cart</Button>
+                <Button variant="outline" @click="clearCart">Vaciar carrito</Button>
                 <Link :href="route('home')" class="inline-flex items-center text-[#f53003] dark:text-[#FF4433] hover:underline">
-                  Continue Shopping
+                  Seguir comprando
                 </Link>
               </div>
             </CardFooter>
@@ -151,7 +159,7 @@ const proceedToCheckout = () => {
         <div class="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>Resumen del pedido</CardTitle>
             </CardHeader>
             <CardContent>
               <div class="space-y-2">
@@ -160,11 +168,11 @@ const proceedToCheckout = () => {
                   <span>${{ typeof subtotal === 'number' ? subtotal.toFixed(2) : Number(subtotal).toFixed(2) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>Tax (16%)</span>
+                  <span>Impuesto (16%)</span>
                   <span>${{ typeof tax === 'number' ? tax.toFixed(2) : Number(tax).toFixed(2) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>Shipping</span>
+                  <span>Envío</span>
                   <span>${{ typeof shipping === 'number' ? shipping.toFixed(2) : Number(shipping).toFixed(2) }}</span>
                 </div>
                 <div class="border-t pt-2 mt-2 flex justify-between font-bold">
@@ -175,7 +183,7 @@ const proceedToCheckout = () => {
             </CardContent>
             <CardFooter>
               <Button class="w-full" @click="proceedToCheckout">
-                Proceed to Checkout
+                Ir a pagar
               </Button>
             </CardFooter>
           </Card>

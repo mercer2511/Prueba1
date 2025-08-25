@@ -89,14 +89,14 @@ if (page.props.cart) {
                     </div>
                     <div v-else class="flex items-center space-x-2">
                         <Link :href="route('login')" class="px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
-                            Login
+                            Iniciar sesión
                         </Link>
                         <!-- Botón de registro usando la paleta Catppuccin -->
                         <Link 
                             :href="route('register')" 
                             class="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                         >
-                            Register
+                            Registrarse
                         </Link>
                     </div>
                 </div>

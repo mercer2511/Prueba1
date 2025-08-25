@@ -41,15 +41,15 @@ const filteredItems = computed(() =>
 </script>
 
 <template>
-    <Head title="Shop" />
-    <WelcomeLayout title="Our Products">
+    <Head title="Tienda" />
+    <WelcomeLayout title="Nuestros Productos">
         <div class="mb-6">
-            <p class="text-gray-600 dark:text-gray-400">Browse our collection of high-quality products.</p>
+            <p class="text-gray-600 dark:text-gray-400">Explora nuestra colección de productos de alta calidad.</p>
             <div class="mt-4">
                 <input 
                     type="text" 
                     class="w-full max-w-md px-4 py-2 border rounded-md" 
-                    placeholder="Search products..." 
+                    placeholder="Buscar productos..." 
                     v-model="filters.search"
                     @input="updateSearch(filters.search || '')"
                 />

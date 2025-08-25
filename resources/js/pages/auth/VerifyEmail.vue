@@ -11,20 +11,25 @@ defineProps<{
 </script>
 
 <template>
-    <AuthLayout title="Verify email" description="Please verify your email address by clicking on the link we just emailed to you.">
-        <Head title="Email verification" />
+    <AuthLayout title="Verifica tu correo electrónico" description="Por favor verifica tu dirección de correo electrónico para continuar">
+        <Head title="Verifica tu correo electrónico" />
 
-        <div v-if="status === 'verification-link-sent'" class="mb-4 text-center text-sm font-medium text-green-600">
-            A new verification link has been sent to the email address you provided during registration.
+        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            Antes de continuar, por favor revisa tu correo electrónico para el enlace de verificación.
+            Si no recibiste el correo electrónico, podemos enviarte otro.
         </div>
 
-        <Form method="post" :action="route('verification.send')" class="space-y-6 text-center" v-slot="{ processing }">
-            <Button :disabled="processing" variant="secondary">
-                <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
-                Resend verification email
+        <Form method="post" :action="route('verification.send')" v-slot="{ processing }">
+            <Button :disabled="processing">
+                <LoaderCircle v-if="processing" class="w-4 h-4 animate-spin" />
+                Reenviar correo de verificación
             </Button>
+        </Form>
 
-            <TextLink :href="route('logout')" method="post" as="button" class="mx-auto block text-sm"> Log out </TextLink>
+        <Form method="post" :action="route('logout')" class="mt-4">
+            <Button variant="ghost" class="w-full">
+                Cerrar sesión
+            </Button>
         </Form>
     </AuthLayout>
 </template>
