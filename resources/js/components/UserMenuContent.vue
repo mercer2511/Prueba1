@@ -2,14 +2,33 @@
 import UserInfo from '@/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import type { User } from '@/types';
-import { Link, router } from '@inertiajs/vue3';
-import { LogOut, Settings } from 'lucide-vue-next';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { LogOut, Settings, LayoutGrid } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 interface Props {
     user: User | null;
 }
 
 defineProps<Props>();
+
+// Comprueba si la página actual es parte del área del usuario (dashboard, addresses, etc.)
+const isOnUserArea = computed(() => {
+    // Lista de rutas que son parte del área del usuario
+    const userAreaRoutes = [
+        'dashboard', 
+        'addresses.index', 
+        'addresses.create', 
+        'addresses.edit',
+        'orders.index',
+        'orders.show',
+        'profile.edit',
+        'favorites.index'
+    ];
+    
+    // Verifica si alguna de estas rutas está activa
+    return userAreaRoutes.some(routeName => route().current(routeName));
+});
 
 const handleLogout = () => {
     router.flushAll();
@@ -25,6 +44,13 @@ const handleLogout = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+            <!-- Solo mostramos el enlace al dashboard si NO estamos en el área del usuario -->
+            <DropdownMenuItem v-if="!isOnUserArea" :as-child="true">
+                <Link class="block w-full" :href="route('dashboard')" prefetch as="button">
+                    <LayoutGrid class="mr-2 h-4 w-4" />
+                    Dashboard
+                </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem :as-child="true">
                 <Link class="block w-full" :href="route('profile.edit')" prefetch as="button">
                     <Settings class="mr-2 h-4 w-4" />

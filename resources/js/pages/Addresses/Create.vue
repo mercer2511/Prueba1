@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -117,16 +117,27 @@ onMounted(() => {
                                 />
                                 <InputError :message="form.errors.zip" />
                             </div>
+                            <div class="grid gap-2">
+                                <!-- Espacio en blanco para mantener la alineación -->
+                            </div>
                         </div>
 
-                        <div class="flex items-center space-x-2">
-                            <Checkbox id="is_default" v-model:checked="form.is_default" />
-                            <Label for="is_default">Establecer como dirección predeterminada</Label>
+                        <div class="flex items-center mt-6 pt-4 border-t border-border/40">
+                            <div class="flex items-center space-x-3">
+                                <Checkbox id="is_default" v-model:checked="form.is_default" class="h-5 w-5" />
+                                <Label for="is_default" class="text-base font-medium">
+                                    Establecer como dirección predeterminada
+                                </Label>
+                            </div>
                         </div>
                     </CardContent>
-                    <CardFooter class="flex justify-between">
-                        <Button type="button" variant="outline" :href="route('addresses.index')">Cancelar</Button>
-                        <Button type="submit" :disabled="form.processing">Guardar dirección</Button>
+                    <CardFooter class="flex flex-col sm:flex-row justify-between gap-3 mt-4">
+                        <Link :href="route('addresses.index')" class="w-full sm:w-auto">
+                            <Button type="button" variant="outline" class="w-full">Cancelar</Button>
+                        </Link>
+                        <Button type="submit" :disabled="form.processing" class="w-full sm:w-auto">
+                            Guardar dirección
+                        </Button>
                     </CardFooter>
                 </form>
             </Card>

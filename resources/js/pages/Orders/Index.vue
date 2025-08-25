@@ -2,7 +2,19 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import AppLayout from '@/layouts/AppLayout.vue';
+import CartLayout from '@/layouts/CartLayout.vue';
+import { type BreadcrumbItem } from '@/types';
+
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    title: 'Mi cuenta',
+    href: route('dashboard'),
+  },
+  {
+    title: 'Mis órdenes',
+    href: route('orders.index'),
+  }
+];
 
 interface OrderItem {
   id: number;
@@ -68,57 +80,64 @@ const getStatusClass = (status: string) => {
 </script>
 
 <template>
-  <AppLayout>
+  <CartLayout title="My Orders" :breadcrumbs="breadcrumbs">
     <Head title="My Orders" />
 
-    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-2">My Orders</h1>
-        <p class="text-gray-600 dark:text-gray-400">View and manage your purchase history.</p>
+    <div class="flex flex-col gap-6 p-4">
+      <div>
+        <h1 class="text-2xl font-bold">My Orders</h1>
+        <p class="text-muted-foreground mt-1">View and manage your purchase history.</p>
       </div>
 
-      <div v-if="orders.length === 0" class="text-center py-16">
-        <p class="text-xl text-gray-600 dark:text-gray-400 mb-6">You haven't placed any orders yet.</p>
-        <Link :href="route('home')" class="text-[#f53003] dark:text-[#FF4433] hover:underline">Browse Products</Link>
+      <div v-if="orders.length === 0" class="text-center py-12 bg-card rounded-lg shadow">
+        <div class="mx-auto w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-muted">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h2 class="text-xl font-semibold mb-2">You haven't placed any orders yet.</h2>
+        <p class="text-muted-foreground mb-6">Start shopping to see your orders here</p>
+        <Link :href="route('home')">
+          <Button variant="default">Browse Products</Button>
+        </Link>
       </div>
 
-      <div v-else class="space-y-6">
+      <div v-else class="grid gap-4">
         <Card v-for="order in orders" :key="order.id" class="overflow-hidden">
-          <CardHeader class="flex flex-row items-start justify-between">
+          <CardHeader class="flex flex-col sm:flex-row gap-4 items-start justify-between">
             <div>
-              <CardTitle class="flex items-center gap-2">
-                Order #{{ order.id }}
+              <CardTitle class="flex flex-wrap items-center gap-2">
+                <span>Order #{{ order.id }}</span>
                 <span :class="['text-xs px-2 py-1 rounded-full', getStatusClass(order.status)]">
                   {{ order.status.charAt(0).toUpperCase() + order.status.slice(1) }}
                 </span>
               </CardTitle>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
+              <p class="text-sm text-muted-foreground mt-1">
                 Placed on {{ formatDate(order.created_at) }}
               </p>
             </div>
-            <div class="text-right">
-              <div class="font-bold">${{ order.total.toFixed(2) }}</div>
-              <div class="flex space-x-2 mt-2">
-                <Link :href="route('orders.show', order.id)" class="text-sm text-[#f53003] dark:text-[#FF4433] hover:underline">
-                  View Details
+            <div class="sm:text-right w-full sm:w-auto">
+              <div class="font-bold text-lg">${{ order.total.toFixed(2) }}</div>
+              <div class="flex flex-wrap gap-3 mt-2">
+                <Link :href="route('orders.show', order.id)">
+                  <Button variant="outline" size="sm">View Details</Button>
                 </Link>
-                <button 
+                <Button 
                   v-if="order.status === 'pending'" 
                   @click="cancelOrder(order.id)" 
-                  class="text-sm text-red-600 dark:text-red-400 hover:underline"
+                  variant="destructive" 
+                  size="sm"
                 >
                   Cancel Order
-                </button>
+                </Button>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div class="space-y-2">
+          <CardContent class="border-t border-border/40 pt-4">
+            <div class="space-y-3">
               <div v-for="item in order.items.slice(0, 3)" :key="item.id" class="flex justify-between text-sm">
-                <div>{{ item.quantity }}x {{ item.item.name }}</div>
-                <div>${{ (item.quantity * item.price).toFixed(2) }}</div>
+                <div class="font-medium">{{ item.quantity }}x {{ item.item.name }}</div>
+                <div class="font-semibold">${{ (item.quantity * item.price).toFixed(2) }}</div>
               </div>
-              <div v-if="order.items.length > 3" class="text-sm text-gray-500 dark:text-gray-400">
+              <div v-if="order.items.length > 3" class="text-sm text-muted-foreground italic">
                 + {{ order.items.length - 3 }} more item(s)
               </div>
             </div>
@@ -126,5 +145,5 @@ const getStatusClass = (status: string) => {
         </Card>
       </div>
     </div>
-  </AppLayout>
+  </CartLayout>
 </template>

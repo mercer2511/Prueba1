@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AppLayout from '@/layouts/AppLayout.vue';
+import CartLayout from '@/layouts/CartLayout.vue';
 
 interface Address {
   id: number;
@@ -61,7 +61,7 @@ const submitShipping = () => {
 </script>
 
 <template>
-  <AppLayout>
+  <CartLayout title="Checkout">
     <Head title="Checkout" />
 
     <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
@@ -157,5 +157,5 @@ const submitShipping = () => {
         </div>
       </div>
     </div>
-  </AppLayout>
+  </CartLayout>
 </template>

@@ -8,6 +8,7 @@ import UserMenuContent from '@/components/UserMenuContent.vue';
 import { useCart } from '@/composables/useCart';
 import { useInitials } from '@/composables/useInitials';
 import { Link, usePage } from '@inertiajs/vue3';
+import ThemeToggle from '@/components/ThemeToggle.vue';
 
 interface Props {
     title?: string;
@@ -47,6 +48,9 @@ if (page.props.cart) {
                 
                 <!-- Acciones de usuario y carrito -->
                 <div class="flex items-center space-x-4">
+                    <!-- Botón de cambio de tema -->
+                    <ThemeToggle />
+                    
                     <!-- Previsualización del carrito -->
                     <div v-if="showCartPreview && itemCount > 0" class="relative">
                         <CartPreview :cart-items="cart?.items || []" />
@@ -87,10 +91,10 @@ if (page.props.cart) {
                         <Link :href="route('login')" class="px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
                             Login
                         </Link>
-                        <!-- Botón de registro con mejor contraste -->
+                        <!-- Botón de registro usando la paleta Catppuccin -->
                         <Link 
                             :href="route('register')" 
-                            class="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 dark:text-white"
+                            class="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                         >
                             Register
                         </Link>

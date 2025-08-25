@@ -68,36 +68,48 @@ const addresses = computed(() => props.addresses || []);
             </div>
 
             <div v-else class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card v-for="address in addresses" :key="address.id" class="relative">
+                <Card v-for="address in addresses" :key="address.id" class="relative flex flex-col h-full">
                     <CardHeader>
-                        <CardTitle class="flex items-center flex-wrap">
-                            <span class="mr-2">{{ address.line_1 }}</span>
-                            <Badge v-if="address.is_default" variant="default">Predeterminada</Badge>
-                        </CardTitle>
+                        <div class="flex items-start justify-between">
+                            <CardTitle class="flex items-center flex-wrap">
+                                <span class="break-words">{{ address.line_1 }}</span>
+                            </CardTitle>
+                            <Badge v-if="address.is_default" variant="default" class="ml-2 whitespace-nowrap">
+                                Predeterminada
+                            </Badge>
+                        </div>
                     </CardHeader>
-                    <CardContent>
-                        <p v-if="address.line_2">{{ address.line_2 }}</p>
-                        <p>{{ address.city }}, {{ address.state }}</p>
-                        <p>CP: {{ address.zip }}</p>
+                    <CardContent class="flex-grow">
+                        <p v-if="address.line_2" class="mb-1 break-words text-sm">{{ address.line_2 }}</p>
+                        <p class="mb-1 text-sm">{{ address.city }}, {{ address.state }}</p>
+                        <p class="text-sm">CP: {{ address.zip }}</p>
                     </CardContent>
-                    <CardFooter class="flex flex-wrap gap-2 justify-end">
-                        <Link v-if="!address.is_default" :href="route('addresses.default', address.id)" method="post">
-                            <Button variant="outline" size="sm">
-                                Establecer predeterminada
-                            </Button>
-                        </Link>
-                        <Link :href="route('addresses.edit', address.id)">
-                            <Button variant="ghost" size="sm">
-                                <Pencil class="h-4 w-4 mr-1" />
-                                Editar
-                            </Button>
-                        </Link>
-                        <Link :href="route('addresses.destroy', address.id)" method="delete" as="button">
-                            <Button variant="ghost" size="sm" class="text-red-600 hover:text-red-700">
-                                <Trash2 class="h-4 w-4 mr-1" />
-                                Eliminar
-                            </Button>
-                        </Link>
+                    <CardFooter class="flex flex-col gap-3 pt-3 border-t border-border/40">
+                        <!-- Sección para establecer como predeterminada -->
+                        <div v-if="!address.is_default" class="w-full">
+                            <Link :href="route('addresses.default', address.id)" method="post" class="w-full">
+                                <Button variant="outline" size="sm" class="w-full">
+                                    <MapPin class="h-4 w-4 mr-1.5" />
+                                    Establecer predeterminada
+                                </Button>
+                            </Link>
+                        </div>
+                        
+                        <!-- Acciones de edición y eliminación -->
+                        <div class="flex w-full justify-between gap-2">
+                            <Link :href="route('addresses.edit', address.id)" class="flex-1">
+                                <Button variant="ghost" size="sm" class="w-full">
+                                    <Pencil class="h-4 w-4 mr-1" />
+                                    Editar
+                                </Button>
+                            </Link>
+                            <Link :href="route('addresses.destroy', address.id)" method="delete" as="button" class="flex-1">
+                                <Button variant="ghost" size="sm" class="w-full text-destructive hover:text-destructive hover:bg-destructive/10">
+                                    <Trash2 class="h-4 w-4 mr-1" />
+                                    Eliminar
+                                </Button>
+                            </Link>
+                        </div>
                     </CardFooter>
                 </Card>
             </div>

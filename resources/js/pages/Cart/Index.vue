@@ -3,7 +3,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import AppLayout from '@/layouts/AppLayout.vue';
+import CartLayout from '@/layouts/CartLayout.vue';
 
 interface CartItem {
   id: number;
@@ -64,7 +64,7 @@ const proceedToCheckout = () => {
 </script>
 
 <template>
-  <AppLayout>
+  <CartLayout title="Your Cart">
     <Head title="Your Cart" />
 
     <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
@@ -182,5 +182,5 @@ const proceedToCheckout = () => {
         </div>
       </div>
     </div>
-  </AppLayout>
+  </CartLayout>
 </template>
