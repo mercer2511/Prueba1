@@ -34,7 +34,7 @@ interface Props {
   orders: Order[];
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);

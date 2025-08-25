@@ -61,16 +61,6 @@ const user = computed(() => page.props.auth.user);
 function formatCurrency(amount: number): string {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
 }
-
-// Esta función se usa en la tabla de pedidos recientes
-function formatDate(dateStr: string): string {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('es-MX', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-}
 </script>
 
 <template>

@@ -17,7 +17,7 @@ interface Props {
 }
 
 // Default props
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
     title: '',
     breadcrumbs: () => [],
     showCartPreview: true

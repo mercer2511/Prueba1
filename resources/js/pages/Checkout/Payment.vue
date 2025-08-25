@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 
-// Definimos un tipo personalizado que incluye todos los campos del formulario más 'payment'
-interface PaymentFormErrors {
+// Definimos un tipo para los errores del formulario de pago
+interface FormErrors {
   card_number?: string;
   card_holder?: string;
   expiry_date?: string;

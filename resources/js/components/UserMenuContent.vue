@@ -9,7 +9,7 @@ interface Props {
     user: User | null;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const handleLogout = () => {
     router.flushAll();
