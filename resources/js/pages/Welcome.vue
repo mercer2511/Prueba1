@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import WelcomeLayout from '@/layouts/WelcomeLayout.vue';
 import ItemGrid from '@/components/shop/ItemGrid.vue';
 import { useProductFilters } from '@/composables/useProductFilters';
+import { computed } from 'vue';
 
 interface Item {
   id: number;
@@ -19,7 +20,6 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// Transformar los datos para ajustarse a nuestros componentes
 const shopItems = props.items.map(item => ({
   id: item.id,
   name: item.name,
@@ -29,8 +29,15 @@ const shopItems = props.items.map(item => ({
   quantity_available: item.stock_quantity
 }));
 
-// Inicializar filtros de productos
 const { filters, updateSearch } = useProductFilters();
+
+// Computed para filtrar productos por texto
+const filteredItems = computed(() =>
+  shopItems.filter(item =>
+    item.name.toLowerCase().includes((filters.value.search || '').toLowerCase()) ||
+    item.description.toLowerCase().includes((filters.value.search || '').toLowerCase())
+  )
+);
 </script>
 
 <template>
@@ -38,8 +45,6 @@ const { filters, updateSearch } = useProductFilters();
     <WelcomeLayout title="Our Products">
         <div class="mb-6">
             <p class="text-gray-600 dark:text-gray-400">Browse our collection of high-quality products.</p>
-            
-            <!-- Aquí podríamos agregar un componente de búsqueda -->
             <div class="mt-4">
                 <input 
                     type="text" 
@@ -50,8 +55,7 @@ const { filters, updateSearch } = useProductFilters();
                 />
             </div>
         </div>
-        
-        <!-- Grid de productos utilizando nuestro componente ItemGrid -->
-        <ItemGrid :items="shopItems" />
+        <!-- Usar la lista filtrada -->
+        <ItemGrid :items="filteredItems" />
     </WelcomeLayout>
 </template>
