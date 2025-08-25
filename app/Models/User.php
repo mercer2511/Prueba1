@@ -18,7 +18,8 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
     ];
@@ -44,5 +45,55 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    
+    /**
+     * Get the user's full name.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+    
+    /**
+     * Get the addresses for the user.
+     */
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+    
+    /**
+     * Get the default address for the user.
+     */
+    public function defaultAddress()
+    {
+        return $this->hasOne(Address::class)->where('is_default', true);
+    }
+    
+    /**
+     * Get the cart for the user.
+     */
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+    
+    /**
+     * Get the active cart for the user.
+     */
+    public function activeCart()
+    {
+        return $this->hasOne(Cart::class)->latest();
+    }
+    
+    /**
+     * Get the orders for the user.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

@@ -27,7 +27,9 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
 
 export interface User {
     id: number;
-    name: string;
+    first_name: string;
+    last_name: string;
+    name?: string;  // El accessor getFullNameAttribute del modelo User
     email: string;
     avatar?: string;
     email_verified_at: string | null;
