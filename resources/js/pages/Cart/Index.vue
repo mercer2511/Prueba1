@@ -2,6 +2,7 @@
 import type { BreadcrumbItemType } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import CartLayout from '@/layouts/CartLayout.vue';
@@ -69,6 +70,10 @@ const breadcrumbs: BreadcrumbItemType[] = [
     href: route('cart.index'),
   },
 ];
+
+// Detectar autenticación usando Inertia
+const page = usePage();
+const isAuthenticated = computed(() => !!(page.props.auth && page.props.auth.user));
 </script>
 
 <template>
@@ -182,8 +187,11 @@ const breadcrumbs: BreadcrumbItemType[] = [
               </div>
             </CardContent>
             <CardFooter>
-              <Button class="w-full" @click="proceedToCheckout">
+              <Button class="w-full" @click="proceedToCheckout" v-if="isAuthenticated">
                 Ir a pagar
+              </Button>
+              <Button class="w-full" @click="proceedToCheckout" v-else>
+                Comprar como invitado
               </Button>
             </CardFooter>
           </Card>

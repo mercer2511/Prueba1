@@ -29,115 +29,141 @@ class CheckoutController extends Controller
     /**
      * Show the checkout page.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        $cart = $this->cartService->getCart($user);
-        
+        $cart = $this->cartService->getCart($user, $request);
+
         if (!$cart || $cart->items()->count() === 0) {
             return redirect()->route('cart.index')
-                ->with('error', 'Your cart is empty. Please add items before checkout.');
+                ->with('error', 'Tu carrito está vacío. Agrega productos antes de continuar.');
         }
-        
-        // Asegurarse de cargar los ítems del carrito
+
         $cart->load('items');
-        
+
+        // Si hay usuario autenticado, envía direcciones; si no, solo el carrito
         $addresses = $user ? $user->addresses : [];
-        
+
         return Inertia::render('Checkout/Index', [
             'cart' => $cart,
             'addresses' => $addresses,
         ]);
     }
-    
+
     /**
      * Process the shipping selection.
      */
     public function shipping(Request $request)
     {
-        $validated = $request->validate([
-            'address_id' => 'required|exists:addresses,id',
-        ]);
-        
         $user = Auth::user();
-        $cart = $this->cartService->getCart($user);
-        $address = Address::findOrFail($validated['address_id']);
-        
-        // Check if address belongs to user
-        if ($user && $address->user_id !== $user->id) {
-            return redirect()->back()->with('error', 'Invalid address selected.');
+
+        if ($user) {
+            $validated = $request->validate([
+                'address_id' => 'required|exists:addresses,id',
+            ]);
+            $cart = $this->cartService->getCart($user, $request);
+            $address = Address::findOrFail($validated['address_id']);
+
+            if ($address->user_id !== $user->id) {
+                return redirect()->back()->with('error', 'Dirección inválida.');
+            }
+
+            $this->cartService->setShippingAddress($cart, $address);
+        } else {
+            // Invitado: validar datos de contacto y dirección
+            $validated = $request->validate([
+                'guest_email' => 'required|email',
+                'guest_phone' => 'required|string|max:20',
+                'guest_name' => 'required|string|max:255',
+                'shipping_address' => 'required|array',
+                'shipping_address.line_1' => 'required|string|max:255',
+                'shipping_address.line_2' => 'nullable|string|max:255',
+                'shipping_address.city' => 'required|string|max:255',
+                'shipping_address.state' => 'required|string|max:255',
+                'shipping_address.zip' => 'required|string|max:20',
+            ]);
+            $cart = $this->cartService->getCart(null, $request);
+
+            // Guarda el snapshot de la dirección en el carrito (o en sesión)
+            $cart->shipping_address_snapshot = json_encode($validated['shipping_address']);
+            $cart->guest_email = $validated['guest_email'];
+            $cart->guest_phone = $validated['guest_phone'];
+            $cart->guest_name = $validated['guest_name'];
+            $cart->save();
         }
-        
-        // Set shipping address for cart
-        $this->cartService->setShippingAddress($cart, $address);
-        
+
         return redirect()->route('checkout.payment');
     }
-    
+
     /**
      * Show the payment page.
      */
-    public function payment()
+    public function payment(Request $request)
     {
         $user = Auth::user();
-        $cart = $this->cartService->getCart($user);
-        
-        if (!$cart || !$cart->shipping_address_id) {
+        $cart = $this->cartService->getCart($user, $request);
+
+        if (!$cart || (!$user && !$cart->shipping_address_snapshot) || ($user && !$cart->shipping_address_id)) {
             return redirect()->route('checkout.index')
-                ->with('error', 'Please select a shipping address first.');
+                ->with('error', 'Selecciona una dirección de envío primero.');
         }
-        
+
         return Inertia::render('Checkout/Payment', [
             'cart' => $cart,
         ]);
     }
-    
+
     /**
      * Process the payment and create the order.
      */
     public function process(Request $request)
     {
         $validated = $request->validate([
-            'card_number' => 'required|string|size:19', // Format: 4111 1111 1111 1111
+            'card_number' => 'required|string|size:19',
             'card_holder' => 'required|string|max:255',
-            'expiry_date' => 'required|string|size:5|date_format:m/y', // Format: MM/YY
+            'expiry_date' => 'required|string|size:5|date_format:m/y',
             'cvv' => 'required|string|size:3',
         ]);
-        
+
         $user = Auth::user();
-        $cart = $this->cartService->getCart($user);
-        
-        // Simple payment validation for the test scenario
+        $cart = $this->cartService->getCart($user, $request);
+
+        // Validación de pago de prueba
         if ($validated['card_number'] !== '4111 1111 1111 1111' || $validated['card_holder'] === 'FAIL') {
             return redirect()->back()
-                ->withErrors(['payment' => 'Payment failed. Please check your card details and try again.']);
+                ->withErrors(['payment' => 'El pago fue rechazado. Verifica los datos e intenta de nuevo.']);
         }
-        
-        // Create order from cart
+
         try {
             DB::beginTransaction();
-            
-            $order = new Order();
-            $order->user_id = $user->id ?? null;
-            $order->address_id = $cart->shipping_address_id;
-            $order->subtotal = $cart->subtotal;
-            $order->tax = $cart->tax;
-            $order->shipping_fee = $cart->shipping_fee;
-            $order->total = $cart->total;
-            $order->status = 'pending';
-            $order->save();
-            
-            // Add items to order and update stock
+
+            $orderData = [
+                'user_id' => $user->id ?? null,
+                'subtotal' => $cart->subtotal,
+                'tax' => $cart->tax,
+                'shipping_fee' => $cart->shipping_fee,
+                'total' => $cart->total,
+                'status' => 'pending',
+                'order_number' => Order::generateOrderNumber(),
+            ];
+
+            if ($user) {
+                $orderData['shipping_address_id'] = $cart->shipping_address_id;
+                $orderData['shipping_address_snapshot'] = $cart->shippingAddress ? json_encode($cart->shippingAddress->toArray()) : null;
+            } else {
+                $orderData['guest_email'] = $cart->guest_email;
+                $orderData['guest_phone'] = $cart->guest_phone;
+                $orderData['guest_name'] = $cart->guest_name;
+                $orderData['shipping_address_snapshot'] = $cart->shipping_address_snapshot;
+            }
+
+            $order = Order::create($orderData);
+
             foreach ($cart->items as $item) {
-                // Check if there's still enough stock
                 if ($item->stock_quantity < $item->pivot->quantity) {
-                    throw new \Exception("Insufficient stock for {$item->name}. Only {$item->stock_quantity} units available.");
+                    throw new \Exception("Stock insuficiente para {$item->name}. Solo quedan {$item->stock_quantity} unidades.");
                 }
-                
-                // Decrease the stock
                 $item->decrement('stock_quantity', $item->pivot->quantity);
-                
-                // Add the item to the order
                 $order->items()->attach($item->id, [
                     'name' => $item->name,
                     'quantity' => $item->pivot->quantity,
@@ -145,18 +171,17 @@ class CheckoutController extends Controller
                     'subtotal' => $item->pivot->quantity * $item->pivot->price
                 ]);
             }
-            
-            // Clear the cart
+
             $this->cartService->clearCart($cart);
-            
+
             DB::commit();
-            
+
             return redirect()->route('orders.show', $order->id)
-                ->with('success', 'Order placed successfully!');
+                ->with('success', '¡Pedido realizado con éxito!');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                ->withErrors(['payment' => 'An error occurred while processing your order. Please try again.']);
+                ->withErrors(['payment' => 'Ocurrió un error al procesar tu pedido. Intenta de nuevo.']);
         }
     }
 }

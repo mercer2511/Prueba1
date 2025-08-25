@@ -41,18 +41,18 @@ Route::put('/cart/{id}', [\App\Http\Controllers\CartController::class, 'update']
 Route::delete('/cart/{id}', [\App\Http\Controllers\CartController::class, 'destroy'])->name('cart.destroy');
 Route::delete('/cart', [\App\Http\Controllers\CartController::class, 'clear'])->name('cart.clear');
 
-// Rutas de checkout - requieren autenticación
+
+// Rutas de checkout - públicas para guest y autenticados
+Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout/shipping', [\App\Http\Controllers\CheckoutController::class, 'shipping'])->name('checkout.shipping');
+Route::get('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'payment'])->name('checkout.payment');
+Route::post('/checkout/process', [\App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
+
+// Rutas protegidas para usuarios autenticados
 Route::middleware(['auth'])->group(function () {
     // Direcciones
     Route::resource('addresses', \App\Http\Controllers\AddressController::class);
     Route::post('addresses/{address}/default', [\App\Http\Controllers\AddressController::class, 'setDefault'])->name('addresses.default');
-    
-    // Proceso de checkout
-    Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout/shipping', [\App\Http\Controllers\CheckoutController::class, 'shipping'])->name('checkout.shipping');
-    Route::get('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'payment'])->name('checkout.payment');
-    Route::post('/checkout/process', [\App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
-    
     // Órdenes
     Route::resource('orders', \App\Http\Controllers\OrderController::class)->only(['index', 'show']);
     Route::post('/orders/{order}/cancel', [\App\Http\Controllers\OrderController::class, 'cancel'])->name('orders.cancel');

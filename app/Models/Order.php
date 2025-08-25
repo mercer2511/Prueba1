@@ -26,7 +26,10 @@ class Order extends Model
         'transaction_id',
         'paid_at',
         'shipped_at',
-        'delivered_at'
+        'delivered_at',
+        'guest_email',
+        'guest_phone',
+        'guest_name',
     ];
 
     /**

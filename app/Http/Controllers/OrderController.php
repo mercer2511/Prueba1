@@ -86,14 +86,14 @@ class OrderController extends Controller
         
         if ($order->status !== 'pending') {
             return redirect()->back()
-                ->with('error', 'Only pending orders can be cancelled.');
+                ->with('error', 'Solo se pueden cancelar pedidos pendientes.');
         }
-        
+
         $order->status = 'cancelled';
         $order->save();
-        
+
         return redirect()->route('orders.index')
-            ->with('success', 'Order cancelled successfully.');
+            ->with('success', 'Pedido cancelado correctamente.');
     }
 
     /**

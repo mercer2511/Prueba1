@@ -27,12 +27,11 @@ class CartController extends Controller
     /**
      * Display the user's shopping cart.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $cart = $this->cartService->getCart(Auth::user());
-        // Ensure the cart is loaded with its items
+        $cart = $this->cartService->getCart(Auth::user(), $request);
         $cart->load('items');
-        
+
         return Inertia::render('Cart/Index', [
             'cart' => $cart,
             'subtotal' => $cart->subtotal,
@@ -51,13 +50,13 @@ class CartController extends Controller
             'item_id' => 'required|exists:items,id',
             'quantity' => 'required|integer|min:1'
         ]);
-        
-        $cart = $this->cartService->getCart(Auth::user());
+
+        $cart = $this->cartService->getCart(Auth::user(), $request);
         $item = Item::findOrFail($validated['item_id']);
-        
+
         try {
             $this->cartService->addItem($cart, $item, $validated['quantity']);
-            return redirect()->back()->with('success', 'Item added to cart successfully.');
+            return redirect()->back()->with('success', 'Producto agregado al carrito correctamente.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -80,18 +79,18 @@ class CartController extends Controller
         $validated = $request->validate([
             'quantity' => 'required|integer|min:0'
         ]);
-        
-        $cart = $this->cartService->getCart(Auth::user());
+
+        $cart = $this->cartService->getCart(Auth::user(), $request);
         $item = Item::findOrFail($id);
-        
+
         if ($validated['quantity'] == 0) {
             $this->cartService->removeItem($cart, $item);
-            $message = 'Item removed from cart.';
+            $message = 'Producto eliminado del carrito.';
             return redirect()->back()->with('success', $message);
         } else {
             try {
                 $this->cartService->updateItemQuantity($cart, $item, $validated['quantity']);
-                $message = 'Cart updated successfully.';
+                $message = 'Carrito actualizado correctamente.';
                 return redirect()->back()->with('success', $message);
             } catch (\Exception $e) {
                 return redirect()->back()->with('error', $e->getMessage());
@@ -102,23 +101,23 @@ class CartController extends Controller
     /**
      * Remove the specified item from the cart.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        $cart = $this->cartService->getCart(Auth::user());
+        $cart = $this->cartService->getCart(Auth::user(), $request);
         $item = Item::findOrFail($id);
         $this->cartService->removeItem($cart, $item);
-        
-        return redirect()->back()->with('success', 'Item removed from cart.');
+
+    return redirect()->back()->with('success', 'Producto eliminado del carrito.');
     }
 
     /**
      * Clear all items from the cart.
      */
-    public function clear()
+    public function clear(Request $request)
     {
-        $cart = $this->cartService->getCart(Auth::user());
+        $cart = $this->cartService->getCart(Auth::user(), $request);
         $this->cartService->clearCart($cart);
-        
-        return redirect()->back()->with('success', 'Cart has been cleared.');
+
+    return redirect()->back()->with('success', 'El carrito ha sido vaciado.');
     }
 }

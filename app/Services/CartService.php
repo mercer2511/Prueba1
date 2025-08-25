@@ -32,7 +32,7 @@ class CartService
      * @param User|null $user
      * @return Cart
      */
-    public function getCart(?User $user = null): Cart
+    public function getCart(?User $user = null, $request = null): Cart
     {
         if ($user) {
             // Get or create a cart for authenticated user
@@ -41,9 +41,11 @@ class CartService
                 ['subtotal' => 0, 'tax' => 0, 'shipping_fee' => 0, 'total' => 0]
             );
         } else {
-            // Get or create a cart for guest user
-            $sessionId = Session::getId();
-            
+            // Usa el session_id del request si está disponible, si no usa Session::getId()
+            $sessionId = $request && method_exists($request, 'session')
+                ? $request->session()->getId()
+                : Session::getId();
+
             $cart = Cart::firstOrCreate(
                 ['session_id' => $sessionId, 'user_id' => null],
                 ['subtotal' => 0, 'tax' => 0, 'shipping_fee' => 0, 'total' => 0]
@@ -68,19 +70,19 @@ class CartService
         if ($item->stock_quantity < $quantity) {
             throw new \Exception("Insufficient stock. Only {$item->stock_quantity} units available.");
         }
-        
+
         // Check if item already exists in cart
         $existingItem = $cart->items()->where('item_id', $item->id)->first();
 
         if ($existingItem) {
             // Calculate new total quantity
             $newQuantity = $existingItem->pivot->quantity + $quantity;
-            
+
             // Check if the new total quantity exceeds available stock
             if ($newQuantity > $item->stock_quantity) {
                 throw new \Exception("Insufficient stock. Only {$item->stock_quantity} units available.");
             }
-            
+
             // Update quantity if item already exists
             $cart->items()->updateExistingPivot($item->id, [
                 'quantity' => $newQuantity
@@ -116,7 +118,7 @@ class CartService
             if ($quantity > $item->stock_quantity) {
                 throw new \Exception("Insufficient stock. Only {$item->stock_quantity} units available.");
             }
-            
+
             // Update item quantity
             $cart->items()->updateExistingPivot($item->id, [
                 'quantity' => $quantity
@@ -137,7 +139,7 @@ class CartService
     public function removeItem(Cart $cart, Item $item): Cart
     {
         $cart->items()->detach($item->id);
-        
+
         // Recalculate cart totals
         return $this->updateCartTotals($cart);
     }
@@ -153,13 +155,13 @@ class CartService
     {
         $cart->shipping_address_id = $address->id;
         $cart->save();
-        
+
         // Calculate shipping fee
         $shippingFee = $this->shippingService->calculateRate($address);
-        
+
         // Update cart with shipping fee
         $cart->update(['shipping_fee' => $shippingFee]);
-        
+
         // Recalculate cart totals
         return $this->updateCartTotals($cart);
     }
@@ -174,31 +176,31 @@ class CartService
     {
         // Reload cart with items
         $cart->load('items');
-        
+
         // Calculate subtotal
         $subtotal = $cart->items->sum(function ($item) {
             return $item->pivot->quantity * $item->pivot->price;
         });
-        
+
         // Format subtotal as string with 2 decimal places
         $subtotal = number_format($subtotal, 2, '.', '');
-        
+
         // Calculate tax
         $tax = $this->taxService->calculateTax($subtotal);
-        
+
         // Get shipping fee (ensure it's a string with 2 decimal places)
         $shipping = $cart->shipping_fee ? number_format((float)$cart->shipping_fee, 2, '.', '') : '0.00';
-        
+
         // Calculate total (convert all values to float for calculation, then back to string)
         $total = number_format((float)$subtotal + (float)$tax + (float)$shipping, 2, '.', '');
-        
+
         // Update cart
         $cart->update([
             'subtotal' => $subtotal,
             'tax' => $tax,
             'total' => $total
         ]);
-        
+
         return $cart;
     }
 
@@ -216,19 +218,19 @@ class CartService
             ->whereNull('user_id')
             ->with('items')
             ->first();
-            
+
         if (!$sessionCart) {
             return null;
         }
-        
+
         // Find or create user cart
         $userCart = $this->getCart($user);
-        
+
         // Transfer items from session cart to user cart
         foreach ($sessionCart->items as $item) {
             $this->addItem($userCart, $item, $item->pivot->quantity);
         }
-        
+
         // Transfer shipping address if set
         if ($sessionCart->shipping_address_id) {
             // Actualizar la dirección de envío y la tarifa
@@ -237,10 +239,10 @@ class CartService
                 'shipping_fee' => number_format((float)$sessionCart->shipping_fee, 2, '.', '')
             ]);
         }
-        
+
         // Delete session cart
         $sessionCart->delete();
-        
+
         // Recalculate user cart totals
         return $this->updateCartTotals($userCart);
     }
@@ -254,7 +256,7 @@ class CartService
     public function clearCart(Cart $cart): Cart
     {
         $cart->items()->detach();
-        
+
         $cart->update([
             'subtotal' => 0,
             'tax' => 0,
@@ -262,7 +264,7 @@ class CartService
             'total' => 0,
             'shipping_address_id' => null
         ]);
-        
+
         return $cart;
     }
 }

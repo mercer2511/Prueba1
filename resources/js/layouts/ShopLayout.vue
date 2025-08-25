@@ -50,18 +50,8 @@ if (page.props.cart) {
                         <span class="text-xl font-bold">ShopCart</span>
                     </Link>
                     
-                    <!-- Enlaces de navegación principal -->
-                    <nav class="hidden md:flex items-center space-x-4">
-                        <Link href="/" class="px-3 py-2 text-sm font-medium hover:text-primary">
-                            Inicio
-                        </Link>
-                        <Link href="/categories" class="px-3 py-2 text-sm font-medium hover:text-primary">
-                            Categorías
-                        </Link>
-                        <Link href="/about" class="px-3 py-2 text-sm font-medium hover:text-primary">
-                            Acerca de
-                        </Link>
-                    </nav>
+
+                    <!-- Enlaces de navegación principal eliminados, el logo funciona como acceso a la tienda -->
                 </div>
                 
                 <!-- Acciones de usuario y carrito -->
